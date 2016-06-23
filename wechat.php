@@ -8,22 +8,22 @@ class wechat
     private    $api = '';
     private    $corpid = '';
     private    $corpsecret = '';
-    
+
     public  function __construct()
     {
         $this->api = 'https://qyapi.weixin.qq.com/cgi-bin';
         $this->corpid = 'wxa9921750e465ccc1';
         $this->corpsecret ='pAWgim7tBmWqTdQlvEigL5QBUeraLSXWbVS_L1jQ9p_lPl-xJgzDz-xlP5y2z03a';
-        
+
     }
-    
+
     public  function sendMsg($check_id,$content)
     {
         if(empty($check_id) || empty($content)){
             return false;
         }
         $api_url = $this->api.'/message/send?access_token='.$this->_getToken();
-        if(is_int($check_id) && $check_id<=20){
+        if(is_numeric($check_id) && $check_id<=20){
             $party_id = $check_id;
         }else{
             $user_id = $check_id;
@@ -42,7 +42,7 @@ class wechat
         $ret = $this->curl_post($api_url, $json_data);
         echo $ret."\n";
     }
-    
+
     private   function  _getToken()
     {
         $url = $this->api.'/gettoken?corpid='.$this->corpid.'&corpsecret='.$this->corpsecret;
@@ -50,7 +50,7 @@ class wechat
         $access_token = json_decode($access_token,true);
         return $access_token['access_token'];
     }
-    
+
     /**
      * post请求封装
      * @param string $url        请求链接
@@ -59,7 +59,7 @@ class wechat
      * @param array  $header     header，数组形式
      * @return boolean|mixed
      */
-    private  function curl_post($url, $data, $timeout_ms = 3000, $header = array()) 
+    private  function curl_post($url, $data, $timeout_ms = 3000, $header = array())
     {
         $ch = curl_init();
         // $post_fields = http_build_query($data,'&');
@@ -72,7 +72,7 @@ class wechat
         }
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-    
+
         $result = curl_exec($ch);
         $curl_info = curl_getinfo($ch);
         if(curl_errno($ch)){
@@ -81,7 +81,7 @@ class wechat
         curl_close($ch);
         return $result;
     }
-    
+
     /**
      *
      * @param string $url        请求链接
@@ -102,17 +102,17 @@ class wechat
         if(! empty($header) && is_array($header)){
             curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         }
-        
+
         $result = curl_exec($ch);
         $curl_info = curl_getinfo($ch);
-        
+
         if(curl_errno($ch)){
-           	return false;
+               return false;
         }
         curl_close($ch);
         return $result;
     }
-    
+
 }
 
 error_reporting(E_ALL ^ E_NOTICE);
