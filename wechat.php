@@ -12,22 +12,25 @@ class wechat
     public  function __construct()
     {
         $this->api = 'https://qyapi.weixin.qq.com/cgi-bin';
-        $this->corpid = 'wxa9921750e465ccc1';
-        $this->corpsecret ='pAWgim7tBmWqTdQlvEigL5QBUeraLSXWbVS_L1jQ9p_lPl-xJgzDz-xlP5y2z03a';
+        $this->corpid = 'wx7fb625b033694d41';
+        $this->corpsecret ='KiiETrsU4GAsNilvXR5xsQxrD4S8vZg4ym-2OinC6Bsn0FhGSykyO55A1gN51tx2';
 
     }
 
-    public  function sendMsg($check_id,$content)
+    public  function sendMsg($check_id,$content,$type)
     {
-        if(empty($check_id) || empty($content)){
+        if(empty($check_id) || empty($content) || empty($type)){
             return false;
         }
         $api_url = $this->api.'/message/send?access_token='.$this->_getToken();
-        if(is_numeric($check_id) && $check_id<=20){
-            $party_id = $check_id;
-        }else{
-            $user_id = $check_id;
+        
+        if ($type == 'u') {
+            $user_id  = $check_id;
         }
+        if ($type == 'g') {
+            $party_id = $check_id;
+        }
+
         $data = array(
             'msgtype'=>'text',
             'touser' =>$user_id,
@@ -115,18 +118,23 @@ class wechat
 
 }
 
+$options = getopt("u:g:c:");
+// var_dump($options,$argv);die;
+
 error_reporting(E_ALL ^ E_NOTICE);
 
-if ($argc != 3) {
-     die("用法：/path/to/php <微信ID｜组ID>  <消息内容> \n");
+if (!$options['c']) {
+     die("消息内容必填, 用法：/path/to/php -u <微信ID> -g <组ID,多个用逗号分割> －c <消息内容> \n");
 }
 
-$id = $argv [1];
-
-$content = $argv [2];
-
 $wechat = new wechat();
-echo "\n";
-$wechat->sendMsg($id,$content);
+
+if (!empty($options['u'])) {
+    $wechat->sendMsg($options['u'],$options['c'],'u');die;
+}
+
+if (!empty($options['g'])) {
+    $wechat->sendMsg($options['g'],$options['c'],'g');die;
+}
 
 
